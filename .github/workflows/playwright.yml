@@ -4,6 +4,14 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      update_snapshots:
+        description: "Update visual regression snapshots"
+        required: false
+        default: false
+        type: boolean
+
 jobs:
   test:
     timeout-minutes: 60
@@ -17,8 +25,26 @@ jobs:
         run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Build application
+        run: npm run build
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npm run start &
+          sleep 3
+          npx playwright test ${{ github.event.inputs.update_snapshots == 'true' && '--update-snapshots' || '' }}
+      - name: Upload updated snapshots
+        if: github.event.inputs.update_snapshots == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: updated-snapshots
+          path: tests/__screenshots__/
+      - name: Commit snapshot updates
+        if: github.event.inputs.update_snapshots == 'true'
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add tests/__screenshots__/
+          git commit -m "chore: update visual regression snapshots [skip ci]" || echo "No changes to commit"
+          git push
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
