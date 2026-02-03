@@ -42,7 +42,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add tests/*-snapshots/
           git commit -m "chore: update visual regression snapshots [skip ci]" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref_name }}
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
