@@ -28,10 +28,7 @@ jobs:
       - name: Build application
         run: npm run build
       - name: Run Playwright tests
-        run: |
-          npm run start &
-          sleep 3
-          npx playwright test ${{ github.event.inputs.update_snapshots == 'true' && '--update-snapshots' || '' }}
+        run: npx playwright test ${{ github.event.inputs.update_snapshots == 'true' && '--update-snapshots' || '' }}
       - name: Upload updated snapshots
         if: github.event.inputs.update_snapshots == 'true'
         uses: actions/upload-artifact@v4
