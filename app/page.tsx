@@ -36,7 +36,7 @@ export default function HomePage() {
 
       <Copy>
         Hello. I am software engineer at X company. I am passionate about
-        building scalable and maintainable software applications. Regression!
+        building scalable and maintainable software applications.
       </Copy>
 
       <Copy>
